@@ -1,10 +1,11 @@
 MODEL:
   PRETRAIN_CHOICE: 'imagenet'
-  PRETRAIN_PATH: './models/r50_ibn_a.pth'
+  PRETRAIN_PATH: '/home/mitya/.cache/torch/checkpoints/resnet50-19c8e357.pth'
   METRIC_LOSS_TYPE: 'triplet_center'
   IF_LABELSMOOTH: 'on'
   IF_WITH_CENTER: 'yes'
-  DEVICE_ID: '1'
+  DEVICE_ID: ''
+  IN_PLANES: 256
 
 INPUT:
   SIZE_TRAIN: [256, 128]

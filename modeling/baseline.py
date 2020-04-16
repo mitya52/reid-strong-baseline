@@ -38,7 +38,7 @@ def weights_init_classifier(m):
 class Baseline(nn.Module):
     in_planes = 2048
 
-    def __init__(self, num_classes, last_stride, model_path, neck, neck_feat, model_name, pretrain_choice):
+    def __init__(self, num_classes, last_stride, model_path, neck, neck_feat, model_name, pretrain_choice, in_planes):
         super(Baseline, self).__init__()
         if model_name == 'resnet18':
             self.in_planes = 512
@@ -132,6 +132,8 @@ class Baseline(nn.Module):
             self.base.load_param(model_path)
             print('Loading pretrained ImageNet model......')
 
+        self.conv = nn.Conv2d(self.in_planes, in_planes, kernel_size=1, bias=False, stride=1)
+
         self.gap = nn.AdaptiveAvgPool2d(1)
         # self.gap = nn.AdaptiveMaxPool2d(1)
         self.num_classes = num_classes
@@ -139,20 +141,20 @@ class Baseline(nn.Module):
         self.neck_feat = neck_feat
 
         if self.neck == 'no':
-            self.classifier = nn.Linear(self.in_planes, self.num_classes)
+            self.classifier = nn.Linear(in_planes, self.num_classes)
             # self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)     # new add by luo
             # self.classifier.apply(weights_init_classifier)  # new add by luo
         elif self.neck == 'bnneck':
-            self.bottleneck = nn.BatchNorm1d(self.in_planes)
+            self.bottleneck = nn.BatchNorm1d(in_planes)
             self.bottleneck.bias.requires_grad_(False)  # no shift
-            self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)
+            self.classifier = nn.Linear(in_planes, self.num_classes, bias=False)
 
             self.bottleneck.apply(weights_init_kaiming)
             self.classifier.apply(weights_init_classifier)
 
     def forward(self, x):
 
-        global_feat = self.gap(self.base(x))  # (b, 2048, 1, 1)
+        global_feat = self.gap(self.conv(self.base(x)))  # (b, 2048, 1, 1)
         global_feat = global_feat.view(global_feat.shape[0], -1)  # flatten to (bs, 2048)
 
         if self.neck == 'no':

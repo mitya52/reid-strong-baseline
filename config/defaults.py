@@ -39,6 +39,7 @@ _C.MODEL.IF_WITH_CENTER = 'no'
 _C.MODEL.METRIC_LOSS_TYPE = 'triplet'
 # For example, if loss type is cross entropy loss + triplet loss + center loss
 # the setting should be: _C.MODEL.METRIC_LOSS_TYPE = 'triplet_center' and _C.MODEL.IF_WITH_CENTER = 'yes'
+_C.MODEL.IN_PLANES = 2048
 
 # If train with label smooth, options: 'on', 'off'
 _C.MODEL.IF_LABELSMOOTH = 'on'
